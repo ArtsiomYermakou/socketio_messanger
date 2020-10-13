@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './App.css';
 import io from "socket.io-client"
 
@@ -19,19 +19,38 @@ function App() {
 
     const [message, setMessage] = useState("Hello")
     const [name, setName] = useState("Artem")
+    const [isAutoScrollActive, setIsAutoScrollActive] = useState(true)
+    const [lastScrollTop, setLastScrollTop] = useState(0)
+
+    useEffect(() => {
+        if (isAutoScrollActive) {
+            messagesAnchorRef.current?.scrollIntoView({behavior: "smooth"})
+        }
+    }, [messages])
+
+    const messagesAnchorRef = useRef<HTMLDivElement>(null);
 
     return (
         <div className="App">
             <div>
                 <div style={{
                     border: "1px solid black", padding: "10px", height: "300px", width: "300px", overflow: "scroll"
-                }}>
+                }} onScroll={(e) => {
+                    if (e.currentTarget.scrollTop > lastScrollTop) {
+                        setIsAutoScrollActive(true);
+                    } else {
+                        setIsAutoScrollActive(false);
+                    }
+                    setLastScrollTop(e.currentTarget.scrollTop);
+                }}
+                >
                     {messages.map(m => {
                         return <div key={m.id}>
                             <b>{m.user.name}:</b> {m.message}
                             <hr/>
                         </div>
                     })}
+                    <div ref={messagesAnchorRef}/>
                 </div>
                 <div>
                     <input type="text" value={name} onChange={(e) => setName(e.currentTarget.value)}/>
