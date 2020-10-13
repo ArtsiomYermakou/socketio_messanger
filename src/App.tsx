@@ -36,7 +36,9 @@ function App() {
                 <div style={{
                     border: "1px solid black", padding: "10px", height: "300px", width: "300px", overflow: "scroll"
                 }} onScroll={(e) => {
-                    if (e.currentTarget.scrollTop > lastScrollTop) {
+                    let element = e.currentTarget;
+                    let maxScrollPosition = element.scrollHeight - element.clientHeight;
+                    if (element.scrollTop > lastScrollTop && Math.abs(maxScrollPosition - element.scrollTop) < 10) {
                         setIsAutoScrollActive(true);
                     } else {
                         setIsAutoScrollActive(false);
