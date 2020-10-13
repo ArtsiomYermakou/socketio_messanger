@@ -1,21 +1,30 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './App.css';
-import io from "socket.io-client"
+import {applyMiddleware, combineReducers, createStore} from "redux";
+import {useDispatch, useSelector} from "react-redux";
+import thunk from "redux-thunk"
+import {chatReducer, createConnection, destroyConnection} from "./chat-reducer";
+const rootReducer = combineReducers({chat: chatReducer})
+type AppStateType = ReturnType<typeof rootReducer>
 
-const socket = io("https://samurai-chat-back.herokuapp.com");
+
+
+const store = createStore(combineReducers({chat: chatReducer}),
+    applyMiddleware(thunk))
 
 function App() {
 
+    const dispatch = useDispatch()
+    const messages = useSelector((state: AppStateType) => state.chat.messages)
+
     useEffect(() => {
-        socket.on("init-messages-published", (messages: any) => {
-            setMessages(messages)
-        })
-        socket.on("new-message-sent", (message: any) => {
-            setMessages((messages) => [...messages, message])
-        })
+        dispatch(createConnection());
+        return () => {
+            dispatch(destroyConnection());
+        }
     }, [])
 
-    const [messages, setMessages] = useState<Array<any>>([])
+    //const [messages, setMessages] = useState<Array<any>>([])
 
     const [message, setMessage] = useState("Hello")
     const [name, setName] = useState("Artem")
@@ -46,7 +55,7 @@ function App() {
                     setLastScrollTop(e.currentTarget.scrollTop);
                 }}
                 >
-                    {messages.map(m => {
+                    {messages.map((m: any) => {
                         return <div key={m.id}>
                             <b>{m.user.name}:</b> {m.message}
                             <hr/>
