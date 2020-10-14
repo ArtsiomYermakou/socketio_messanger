@@ -1,16 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './App.css';
-import {applyMiddleware, combineReducers, createStore} from "redux";
 import {useDispatch, useSelector} from "react-redux";
-import thunk from "redux-thunk"
-import {chatReducer, createConnection, destroyConnection} from "./chat-reducer";
-const rootReducer = combineReducers({chat: chatReducer})
-type AppStateType = ReturnType<typeof rootReducer>
+import {createConnection, destroyConnection, sendMessage, setClientName} from "./chat-reducer";
+import {AppStateType} from "./index";
 
 
-
-const store = createStore(combineReducers({chat: chatReducer}),
-    applyMiddleware(thunk))
 
 function App() {
 
@@ -24,7 +18,7 @@ function App() {
         }
     }, [])
 
-    //const [messages, setMessages] = useState<Array<any>>([])
+    // const [messages, setMessages] = useState<Array<any>>([])
 
     const [message, setMessage] = useState("Hello")
     const [name, setName] = useState("Artem")
@@ -66,16 +60,14 @@ function App() {
                 <div>
                     <input type="text" value={name} onChange={(e) => setName(e.currentTarget.value)}/>
                     <button onClick={() => {
-                        socket.emit("client-name-sent", name)
+                        dispatch(setClientName(name))
                     }}>Send Name
                     </button>
                 </div>
                 <textarea value={message} onChange={e => setMessage(e.currentTarget.value)}>
-
                 </textarea>
-
                 <button onClick={() => {
-                    socket.emit("client-message-sent", message)
+                    dispatch(sendMessage(messages))
                     setMessage("")
                 }}>Send
                 </button>

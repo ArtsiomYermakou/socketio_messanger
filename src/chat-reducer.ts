@@ -33,6 +33,16 @@ export const createConnection = () => (dispatch: any) => {
             dispatch(newMessageReceived(message))
         })
 }
+
+export const setClientName = (name: string) => (dispatch: any) => {
+    api.sendName(name)
+}
+
+export const sendMessage = (messages: string) => (dispatch: any) => {
+    api.sendMessage(messages)
+}
+
+
 export const destroyConnection = () => (dispatch: any) => {
     api.destroyConnection()
 }

@@ -13,5 +13,13 @@ export const api = {
     destroyConnection() {
         this.socket?.disconnect();
         this.socket = null;
-    }
+    },
+    sendName(name: string){
+        this.socket?.emit("client-name-sent", name)
+    },
+    sendMessage(message: string){
+        this.socket?.emit("client-message-sent", message)
+    },
+
 }
+/////2.57
